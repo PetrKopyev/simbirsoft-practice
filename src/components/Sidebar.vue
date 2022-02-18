@@ -93,15 +93,15 @@ export default {
     IconTelegram,
     AppSvg,
   },
-  created() {
-    this.menuItems = menuItems;
+  data() {
+    return {
+      menuItems,
+    };
   },
 };
 </script>
 
 <style lang="scss">
-@import "@/styles/_variables.scss";
-@import "@/styles/_mixins.scss";
 
 .sidebar {
   position: fixed;

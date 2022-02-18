@@ -8,4 +8,15 @@ module.exports = {
     config.resolve.alias
       .set('@', path.resolve(__dirname, 'src'));
   },
+  css: {
+    loaderOptions: {
+      sass: {
+        prependData: `
+          @import "@/styles/_variables.scss";
+          @import "@/styles/_mixins.scss";
+
+        `,
+      },
+    },
+  },
 };

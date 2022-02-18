@@ -1,7 +1,7 @@
 <template>
   <div
+    class="carousel-item"
     :class="[
-      'carousel-item',
       {'carousel-item--active': active}
     ]"
     :style="{ backgroundImage: `url(${require('@/assets/image/slider/' + itemData.img)})` }"
@@ -46,8 +46,6 @@ export default {
 </script>
 
 <style lang="scss">
-@import "@/styles/_variables.scss";
-@import "@/styles/_mixins.scss";
 
 .carousel-item {
   width: 100%;

@@ -1,7 +1,7 @@
 <template>
   <div class="start-page">
     <div class="start-page__side wrapper">
-      <v-header />
+      <vHeader />
       <div class="start-page__info">
         <h2 class="start-page__info-carshering">
           Каршеринг
@@ -17,7 +17,7 @@
           Забронировать
         </router-link>
       </div>
-      <v-footer />
+      <vFooter />
     </div>
     <carousel :carousel-data="sliderItems" />
   </div>
@@ -25,8 +25,8 @@
 
 <script>
 import Carousel from '@/components/Carousel.vue';
-import vFooter from './v-footer.vue';
-import vHeader from './v-header.vue';
+import vFooter from './vFooter.vue';
+import vHeader from './vHeader.vue';
 
 const sliderItems = [
   {
@@ -78,15 +78,15 @@ export default {
     vFooter,
     vHeader,
   },
-  created() {
-    this.sliderItems = sliderItems;
+  data() {
+    return {
+      sliderItems,
+    };
   },
 };
 </script>
 
 <style lang="scss">
-@import "@/styles/_variables.scss";
-@import "@/styles/_mixins.scss";
 
 .start-page {
   display: flex;
