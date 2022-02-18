@@ -1,0 +1,25 @@
+/* Colors */
+
+$main-green: #0EC261;
+$main-black: #121212;
+$dark-grey: #999999;
+$light-grey: #EEEEEE;
+$white: #FFFFFF;
+$very-dark: #151B1F;
+
+
+
+/* Hover btn */
+
+$btn-bg-dflt: linear-gradient(90deg, #0EC261 2.61%, #039F67 112.6%);
+$btn-bg-hover: linear-gradient(90deg, #0B934A 2.61%, #026E47 112.6%);
+$btn-bg-active: linear-gradient(90deg, #076432 2.61%, #013C27 112.6%);
+$btn-bg-visit: linear-gradient(90deg, #0B934A 2.61%, #026E47 112.6%);
+$btn-bg-load: linear-gradient(90deg, #0EC261 2.61%, #039F67 112.6%);
+$btn-bg-blocked: $light-grey;
+
+/* Media screen*/
+
+$desktop-min: 1439px;
+$tablet: 1023px;
+$mobile: 767px;
