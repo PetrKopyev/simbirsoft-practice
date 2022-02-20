@@ -19,6 +19,7 @@ module.exports = {
         allow: ['state'],
       },
     ],
+    "global-require": 0,
     'no-param-reassign': [
       'error',
       {
