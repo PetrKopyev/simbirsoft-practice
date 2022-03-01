@@ -28,12 +28,8 @@
     </div>
 
     <div
-      :class="[
-        'side-order-menu__button',
-        {
-          'side-order-menu__button--active': selectedStep.filled
-        }
-      ]"
+      class="side-order-menu__button"
+      :class="[{'side-order-menu__button--active': selectedStep.filled}]"
       @click="onConfirm"
     >
       {{ orderButton }}
@@ -68,6 +64,10 @@ export default {
       case 'model':
         price = 'от 10 000 до 32 000 ₽';
         break;
+      case 'options':
+      case 'result':
+        price = '16 000 ₽';
+        break;
       default:
         price = 'Нет цены';
       }
@@ -77,15 +77,14 @@ export default {
     orderButton() {
       let buttonName = '';
 
-      switch (this.selectedStep.code) {
-      case 'location':
+      if (this.selectedStep.code === 'location') {
         buttonName = 'Выбрать модель';
-        break;
-      case 'model':
+      } else if (this.selectedStep.code === 'model') {
         buttonName = 'Дополнительно';
-        break;
-      default:
-        buttonName = '';
+      } else if (this.selectedStep.code === 'options') {
+        buttonName = 'Итого';
+      } else if (this.selectedStep.code === 'result') {
+        buttonName = 'Заказать';
       }
 
       return buttonName;
@@ -96,10 +95,7 @@ export default {
       let nextStepIndex;
       let currentStepIndex;
 
-      // eslint-disable-next-line default-case
-      switch (this.selectedStep.code) {
-      case 'location':
-      case 'model':
+      if (this.selectedStep.code === 'location' || this.selectedStep.code === 'model') {
         if (this.selectedStep.filled) {
           currentStepIndex = Object.values(this.steps)
             .findIndex((item) => item.code === this.selectedStep.code);
@@ -112,11 +108,9 @@ export default {
               stepName: this.steps[nextStepIndex].code,
             },
           });
+        } else {
+          console.error(`Шаг ${this.selectedStep.code} не существует`);
         }
-        break;
-      default:
-        console.error(`Шаг ${this.selectedStep.code} не существует`);
-        break;
       }
     },
   },

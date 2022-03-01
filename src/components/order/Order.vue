@@ -30,6 +30,8 @@ import vHeader from '@/components/vHeader.vue';
 import Stages from '@/components/Stages.vue';
 import SideOrderMenu from '@/components/SideOrderMenu.vue';
 import Model from '@/components/order/Model.vue';
+import Options from '@/components/order/Options.vue';
+import Result from '@/components/order/Result.vue';
 import Location from './Location.vue';
 
 export default {
@@ -40,6 +42,8 @@ export default {
     SideOrderMenu,
     Location,
     Model,
+    Options,
+    Result,
   },
   data() {
     return {

@@ -12,7 +12,7 @@
         <label for="radio-1"><img
           class="model__radio-check"
           src="@/assets/image/radio.png"
-          alt=""
+          alt="Все модели"
         >Все модели</label>
       </div>
 
@@ -26,7 +26,7 @@
         <label for="radio-2"><img
           class="model__radio-check"
           src="@/assets/image/radio.png"
-          alt=""
+          alt="Эконом"
         >Эконом</label>
       </div>
 
@@ -40,7 +40,7 @@
         <label for="radio-3"><img
           class="model__radio-check"
           src="@/assets/image/radio.png"
-          alt=""
+          alt="Премиум"
         >Премиум</label>
       </div>
     </div>
@@ -54,99 +54,7 @@
 
 <script>
 import ModelCars from '@/components/order/ModelCars.vue';
-
-const cars = [
-  {
-    id: 1,
-    priceMin: '12 000',
-    priceMax: '25 000',
-    model: 'Elantra',
-    name: 'Hyundai, Elantra',
-    description: 'Эконом',
-    colors: ['Любой', 'Красный', 'Голубой', 'Синий'],
-    categoryId: {
-      petrol: 'Полный бак, 500₽',
-      chair: 'Детское кресло, 200₽',
-      'right hand': 'Правый руль, 1600₽',
-    },
-    img: require('@/assets/image/cars/elantra.jpg'),
-  },
-  {
-    id: 2,
-    priceMin: '10 000',
-    priceMax: '32 000',
-    model: 'i30 N',
-    name: 'Hyundai, i30 N',
-    description: 'Премиум',
-    colors: ['Любой', 'Голубой', 'Черный', 'Оранжевый'],
-    categoryId: {
-      petrol: 'Полный бак, 500₽',
-      chair: 'Детское кресло, 200₽',
-      'right hand': 'Правый руль, 1600₽',
-    },
-    img: require('@/assets/image/cars/i30.jpg'),
-  },
-  {
-    id: 3,
-    priceMin: '12 000',
-    priceMax: '25 000',
-    model: 'CRETA',
-    name: 'Hyundai, Creta',
-    description: 'Эконом',
-    colors: ['Любой', 'Черный', 'Оранжевый'],
-    categoryId: {
-      petrol: 'Полный бак, 500₽',
-      chair: 'Детское кресло, 200₽',
-      'right hand': 'Правый руль, 1600₽',
-    },
-    img: require('@/assets/image/cars/creta.jpg'),
-  },
-  {
-    id: 4,
-    priceMin: '10 000',
-    priceMax: '32 000',
-    model: 'SONATA',
-    name: 'Hyundai, Sonata',
-    description: 'Премиум',
-    colors: ['Любой', 'Темно-синий', 'Белый'],
-    categoryId: {
-      petrol: 'Полный бак, 500₽',
-      chair: 'Детское кресло, 200₽',
-      'right hand': 'Правый руль, 1600₽',
-    },
-    img: require('@/assets/image/cars/sonata.jpg'),
-  },
-  {
-    id: 5,
-    priceMin: '12 000',
-    priceMax: '25 000',
-    model: 'Elantra',
-    name: 'Hyundai, Elantra',
-    description: 'Эконом',
-    colors: ['Любой', 'Красный', 'Голубой', 'Синий'],
-    categoryId: {
-      petrol: 'Полный бак, 500₽',
-      chair: 'Детское кресло, 200₽',
-      'right hand': 'Правый руль, 1600₽',
-    },
-    img: require('@/assets/image/cars/elantra.jpg'),
-  },
-  {
-    id: 6,
-    priceMin: '10 000',
-    priceMax: '32 000',
-    model: 'i30 N',
-    name: 'Hyundai, i30 N',
-    description: 'Премиум',
-    colors: ['Любой', 'Голубой', 'Черный', 'Оранжевый'],
-    categoryId: {
-      petrol: 'Полный бак, 500₽',
-      chair: 'Детское кресло, 200₽',
-      'right hand': 'Правый руль, 1600₽',
-    },
-    img: require('@/assets/image/cars/i30.jpg'),
-  },
-];
+import cars from '@/constants/cars';
 
 export default {
   name: 'Model',

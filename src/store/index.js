@@ -16,6 +16,16 @@ export default new Vuex.Store({
         translate: 'Модель',
         filled: false,
       },
+      2: {
+        code: 'options',
+        translate: 'Дополнительно',
+        filled: false,
+      },
+      3: {
+        code: 'result',
+        translate: 'Итого',
+        filled: false,
+      },
     },
     order: {
       city: null,

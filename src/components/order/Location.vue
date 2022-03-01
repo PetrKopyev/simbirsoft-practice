@@ -24,7 +24,7 @@
       <div class="location__map">
         <img
           src="@/assets/image/geo-map.jpg"
-          alt=""
+          alt="Карта"
           class="location__map-img"
         >
       </div>
