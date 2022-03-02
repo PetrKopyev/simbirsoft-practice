@@ -21,6 +21,36 @@
           <span>Hyundai, i30 N</span>
         </div>
       </li>
+      <template v-if="isOptionsOrResultOrInfo">
+        <li class="side-order-menu__item">
+          <span class="side-order-menu__item-left">Цвет</span>
+          <div class="side-order-menu__item-dots" />
+          <div class="side-order-menu__item-right">
+            <span>Голубой</span>
+          </div>
+        </li>
+        <li class="side-order-menu__item">
+          <span class="side-order-menu__item-left">Длительность аренды</span>
+          <div class="side-order-menu__item-dots" />
+          <div class="side-order-menu__item-right">
+            <span>1д 2ч</span>
+          </div>
+        </li>
+        <li class="side-order-menu__item">
+          <span class="side-order-menu__item-left">Тариф</span>
+          <div class="side-order-menu__item-dots" />
+          <div class="side-order-menu__item-right">
+            <span>На сутки</span>
+          </div>
+        </li>
+        <li class="side-order-menu__item">
+          <span class="side-order-menu__item-left">Полный бак</span>
+          <div class="side-order-menu__item-dots" />
+          <div class="side-order-menu__item-right">
+            <span>Да</span>
+          </div>
+        </li>
+      </template>
     </ul>
 
     <div class="side-order-menu__cost">
@@ -28,18 +58,31 @@
     </div>
 
     <div
-      class="side-order-menu__button"
-      :class="[{'side-order-menu__button--active': selectedStep.filled}]"
+      :class="[
+        'side-order-menu__button',
+        {
+          'side-order-menu__button--active': selectedStep.filled || selectedStep.code === 'result',
+          'side-order-menu__button--red': selectedStep.code === 'info',
+        }
+      ]"
       @click="onConfirm"
     >
       {{ orderButton }}
     </div>
+
+    <confirm-result
+      v-if="popUpVisible"
+      @show="popUpVisible = $event"
+    />
   </div>
 </template>
 
 <script>
+import ConfirmResult from '@/components/order/ConfirmResult.vue';
+
 export default {
   name: 'SideOrderMenu',
+  components: { ConfirmResult },
   props: {
     selectedStep: {
       type: Object,
@@ -50,7 +93,15 @@ export default {
       required: true,
     },
   },
+  data() {
+    return {
+      popUpVisible: false,
+    };
+  },
   computed: {
+    isOptionsOrResultOrInfo() {
+      return this.selectedStep.code === 'options' || this.selectedStep.code === 'result' || this.selectedStep.code === 'info';
+    },
     isShowCarBlock() {
       return this.selectedStep.code !== 'location';
     },
@@ -66,6 +117,7 @@ export default {
         break;
       case 'options':
       case 'result':
+      case 'info':
         price = '16 000 ₽';
         break;
       default:
@@ -85,17 +137,24 @@ export default {
         buttonName = 'Итого';
       } else if (this.selectedStep.code === 'result') {
         buttonName = 'Заказать';
+      } else if (this.selectedStep.code === 'info') {
+        buttonName = 'Отменить';
+      } else {
+        buttonName = '';
       }
 
       return buttonName;
     },
   },
   methods: {
+    showPopUp() {
+      this.popUpVisible = true;
+    },
     onConfirm() {
       let nextStepIndex;
       let currentStepIndex;
 
-      if (this.selectedStep.code === 'location' || this.selectedStep.code === 'model') {
+      if (this.selectedStep.code === 'location' || this.selectedStep.code === 'model' || this.selectedStep.code === 'options') {
         if (this.selectedStep.filled) {
           currentStepIndex = Object.values(this.steps)
             .findIndex((item) => item.code === this.selectedStep.code);
@@ -108,9 +167,18 @@ export default {
               stepName: this.steps[nextStepIndex].code,
             },
           });
-        } else {
-          console.error(`Шаг ${this.selectedStep.code} не существует`);
         }
+      } else if (this.selectedStep.code === 'result') {
+        this.showPopUp();
+      } else if (this.selectedStep.code === 'info') {
+        this.$router.push({
+          name: 'Order',
+          params: {
+            stepName: 'result',
+          },
+        });
+      } else {
+        console.error(`Шаг ${this.selectedStep.code} не существует`);
       }
     },
   },
