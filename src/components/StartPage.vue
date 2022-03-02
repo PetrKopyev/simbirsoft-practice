@@ -12,7 +12,7 @@
         <span class="start-page__info-descr">Поминутная аренда авто твоего города</span>
         <router-link
           class="start-page__reservation"
-          to="/"
+          to="/order"
         >
           Забронировать
         </router-link>
