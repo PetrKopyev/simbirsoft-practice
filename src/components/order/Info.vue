@@ -14,7 +14,7 @@
     <div class="result__img">
       <img
         src="@/assets/image/cars/i30.jpg"
-        alt=""
+        alt="hyundai i30"
       >
     </div>
   </div>

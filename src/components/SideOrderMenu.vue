@@ -58,10 +58,10 @@
     </div>
 
     <div
+      class="side-order-menu__button"
       :class="[
-        'side-order-menu__button',
         {
-          'side-order-menu__button--active': selectedStep.filled || selectedStep.code === 'result',
+          'side-order-menu__button--active': sideOrderMenuButtonActive,
           'side-order-menu__button--red': selectedStep.code === 'info',
         }
       ]"
@@ -99,6 +99,9 @@ export default {
     };
   },
   computed: {
+    sideOrderMenuButtonActive() {
+      return this.selectedStep.filled || this.selectedStep.code === 'result';
+    },
     isOptionsOrResultOrInfo() {
       return this.selectedStep.code === 'options' || this.selectedStep.code === 'result' || this.selectedStep.code === 'info';
     },
@@ -153,8 +156,9 @@ export default {
     onConfirm() {
       let nextStepIndex;
       let currentStepIndex;
+      const selectedStepCode = this.selectedStep.code === 'location' || this.selectedStep.code === 'model' || this.selectedStep.code === 'options';
 
-      if (this.selectedStep.code === 'location' || this.selectedStep.code === 'model' || this.selectedStep.code === 'options') {
+      if (selectedStepCode) {
         if (this.selectedStep.filled) {
           currentStepIndex = Object.values(this.steps)
             .findIndex((item) => item.code === this.selectedStep.code);
