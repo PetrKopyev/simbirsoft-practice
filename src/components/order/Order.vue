@@ -5,7 +5,14 @@
   >
     <v-header />
     <hr>
+    <h1
+      v-if="step.code === 'info'"
+      class="order__name"
+    >
+      Заказ номер RU58491823
+    </h1>
     <stages
+      v-else
       :steps="steps"
       :selected-step="step"
     />
@@ -32,6 +39,7 @@ import SideOrderMenu from '@/components/SideOrderMenu.vue';
 import Model from '@/components/order/Model.vue';
 import Options from '@/components/order/Options.vue';
 import Result from '@/components/order/Result.vue';
+import Info from '@/components/order/Info.vue';
 import Location from './Location.vue';
 
 export default {
@@ -44,6 +52,7 @@ export default {
     Model,
     Options,
     Result,
+    Info,
   },
   data() {
     return {

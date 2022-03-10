@@ -1,8 +1,8 @@
 <template>
   <div class="stages">
     <div
-      v-for="(step, stepIndex) in filteredSteps"
-      :key="stepIndex"
+      v-for="(step, code) in filteredSteps"
+      :key="code"
       class="stage"
       :class="[
         {
@@ -45,6 +45,7 @@ export default {
         if (pickedStepIndex !== 0) {
           const prevStep = this.steps[pickedStepIndex - 1];
 
+          // если заполнен предыдущий шаг то переход
           if (prevStep.filled) {
             this.$router.push({ name: 'Order', params: { stepName: step.code } });
           }
