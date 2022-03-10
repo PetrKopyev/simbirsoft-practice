@@ -26,11 +26,19 @@ export default new Vuex.Store({
         translate: 'Итого',
         filled: false,
       },
+      4: {
+        code: 'info',
+      },
     },
     order: {
       city: null,
       point: null,
       car: null,
+      color: '1',
+      rentDataStart: null,
+      rentDataEnd: null,
+      tariff: null,
+      additionalServices: [],
     },
   },
   mutations: {
