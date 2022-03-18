@@ -6,42 +6,115 @@
         <span>Пункт выдачи</span>
       </div>
       <div class="search__input">
-        <input
+        <el-select
           v-model="city"
-          type="text"
+          filterable
           class="search__mb13"
           placeholder="Начните вводить город"
         >
-        <input
+          <el-option
+            v-for="cityItem in cities"
+            :key="`city-item-${cityItem.id}`"
+            :label="cityItem.name"
+            :value="cityItem.name"
+          />
+        </el-select>
+
+        <el-select
           v-model="point"
-          type="text"
+          filterable
           placeholder="Начните вводить пункт"
+          :disabled="!city"
         >
+          <el-option
+            v-for="pointItem in selectedCityPoints"
+            :key="`point-item-${pointItem.id}`"
+            :label="pointItem.name"
+            :value="pointItem.name"
+          />
+        </el-select>
       </div>
     </div>
     <span class="location__descr">Выбрать на карте:</span>
     <div class="location__order">
       <div class="location__map">
-        <img
-          src="@/assets/image/geo-map.jpg"
-          alt="Карта"
-          class="location__map-img"
+        <yandex-map
+          ymap-class="location__map-box"
+          :coords="mapCenterCoords"
+          :zoom="mapZoom"
+          :controls="controls"
+          :scroll-zoom="scrollZoom"
         >
+          <ymap-marker
+            v-for="pointItem in selectedCityPoints"
+            :key="pointItem.id"
+            :icon="markerIcon"
+            marker-type="placemark"
+            :coords="pointItem.coords"
+            :marker-id="1"
+            :hint-content="pointItem.name"
+            :balloon="{
+              header: pointItem.name,
+              body: pointItem.address,
+              footer: pointItem.cityId.name}"
+            @click="point = pointItem.name"
+          />
+        </yandex-map>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import { mapActions, mapGetters, mapState } from 'vuex';
+import { yandexMap, ymapMarker } from 'vue-yandex-maps';
+import api from '@/api';
+
 export default {
   name: 'FirstStep',
+  components: {
+    yandexMap,
+    ymapMarker,
+  },
+  data() {
+    return {
+      coords: [],
+      controls: ['zoomControl'],
+      scrollZoom: false,
+      markerIcon: {
+        layout: 'default#imageWithContent',
+        imageHref: '/placemark.png',
+        imageSize: [18, 18],
+        imageOffset: [0, 0],
+      },
+
+      mapCenterCoords: [54.333505, 48.384294],
+    };
+  },
   computed: {
+    ...mapState(['cities', 'points']),
+    ...mapGetters(['selectedCityPoints', 'selectedCityObject', 'selectPoint']),
+
+    address() {
+      let address = '';
+
+      if (this.selectedCityObject) {
+        address += this.selectedCityObject.name;
+
+        if (this.selectPoint) {
+          address += ` ${this.selectPoint.address}`;
+        }
+      }
+
+      return address;
+    },
+
     city: {
       get() {
         return this.$store.state.order.city;
       },
       set(value) {
-        this.$store.dispatch('setOrder', { key: 'city', value });
+        this.setOrder({ key: 'city', value });
       },
     },
     point: {
@@ -49,16 +122,49 @@ export default {
         return this.$store.state.order.point;
       },
       set(value) {
-        this.$store.dispatch('setOrder', { key: 'point', value });
+        this.setOrder({ key: 'point', value });
       },
     },
     isStepFilled() {
       return !!this.city && !!this.point;
     },
+    mapZoom() {
+      let zoom = 16;
+
+      if (this.city) {
+        zoom = 12;
+
+        if (this.point) {
+          zoom = 16;
+        }
+      }
+
+      return zoom;
+    },
   },
+
   watch: {
     isStepFilled(value) {
-      this.$store.dispatch('setStepFilledStatus', { stepName: 'location', value });
+      this.setStepFilledStatus({ stepName: 'location', value });
+    },
+    city() {
+      this.getCoordsFromAddress();
+      this.point = null;
+    },
+    point() {
+      this.getCoordsFromAddress();
+    },
+  },
+
+  created() {
+    this.getOrderData();
+  },
+
+  methods: {
+    ...mapActions(['setOrder', 'setStepFilledStatus', 'getOrderData']),
+
+    async getCoordsFromAddress() {
+      this.mapCenterCoords = await api.maps.getCoordsByAddress(this.address);
     },
   },
 };
@@ -88,10 +194,15 @@ export default {
 
     &__map {
       max-width: 736px;
-      height: 100%;
+
       @include tablet {
         max-width: 536px;
         max-height: 352px;
+      }
+
+      &-box {
+        width: 100%;
+        height: 352px;
       }
     }
   }
@@ -146,6 +257,25 @@ export default {
 
     &__mb13 {
       margin-bottom: 10px;
+    }
+  }
+
+  .el-select {
+    border-bottom: 1px solid $dark-grey;
+
+    input {
+      border-bottom: none;
+    }
+
+    .el-input__inner {
+      height: auto;
+      line-height: inherit;
+    }
+  }
+
+  .el-select-dropdown__item {
+    span {
+      font-family: inherit;
     }
   }
 </style>

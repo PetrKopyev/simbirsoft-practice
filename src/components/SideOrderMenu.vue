@@ -8,7 +8,20 @@
         <span class="side-order-menu__item-left">Пункт выдачи</span>
         <div class="side-order-menu__item-dots" />
         <div class="side-order-menu__item-right">
-          <span>Ульяновск, Нариманова 42</span>
+          <span v-if="!selectedCityObject">
+            Пункт не выбран
+          </span>
+          <div
+            v-else
+            class="side-order-menu__item-right-empty"
+          >
+            <span>
+              {{ this.$store.state.order.city }}
+            </span>
+            <span>
+              {{ this.$store.state.order.point }}
+            </span>
+          </div>
         </div>
       </li>
       <li
@@ -18,7 +31,15 @@
         <span class="side-order-menu__item-left">Модель</span>
         <div class="side-order-menu__item-dots" />
         <div class="side-order-menu__item-right">
-          <span>Hyundai, i30 N</span>
+          <span v-if="!selectedCarObject">
+            Автомобиль не выбран
+          </span>
+          <div
+            v-else
+            class="side-order-menu__item-right-empty"
+          >
+            {{ selectedCarObject.name }}
+          </div>
         </div>
       </li>
       <template v-if="isOptionsOrResultOrInfo">
@@ -26,28 +47,28 @@
           <span class="side-order-menu__item-left">Цвет</span>
           <div class="side-order-menu__item-dots" />
           <div class="side-order-menu__item-right">
-            <span>Голубой</span>
+            <span>Не выбран</span>
           </div>
         </li>
         <li class="side-order-menu__item">
           <span class="side-order-menu__item-left">Длительность аренды</span>
           <div class="side-order-menu__item-dots" />
           <div class="side-order-menu__item-right">
-            <span>1д 2ч</span>
+            <span>Не выбрано</span>
           </div>
         </li>
         <li class="side-order-menu__item">
           <span class="side-order-menu__item-left">Тариф</span>
           <div class="side-order-menu__item-dots" />
           <div class="side-order-menu__item-right">
-            <span>На сутки</span>
+            <span>Не выбран</span>
           </div>
         </li>
         <li class="side-order-menu__item">
           <span class="side-order-menu__item-left">Полный бак</span>
           <div class="side-order-menu__item-dots" />
           <div class="side-order-menu__item-right">
-            <span>Да</span>
+            <span>Не выбран</span>
           </div>
         </li>
       </template>
@@ -79,6 +100,7 @@
 
 <script>
 import ConfirmResult from '@/components/order/ConfirmResult.vue';
+import { mapGetters } from 'vuex';
 
 export default {
   name: 'SideOrderMenu',
@@ -99,6 +121,7 @@ export default {
     };
   },
   computed: {
+    ...mapGetters(['selectedCityPoints', 'selectedCityObject', 'selectedCarObject']),
     sideOrderMenuButtonActive() {
       return this.selectedStep.filled || this.selectedStep.code === 'result';
     },
@@ -113,10 +136,10 @@ export default {
 
       switch (this.selectedStep.code) {
       case 'location':
-        price = 'от 8 000 до 12 000 ₽';
+        price = '0 ₽';
         break;
       case 'model':
-        price = 'от 10 000 до 32 000 ₽';
+        price = `от ${this.selectedCarObject.priceMin} до ${this.selectedCarObject.priceMax} ₽`;
         break;
       case 'options':
       case 'result':
@@ -239,9 +262,12 @@ export default {
 
     &-right {
       color: $dark-grey;
-      max-width: 100px;
       text-align: right;
-      min-width: 57px;
+
+      &-empty {
+        display: flex;
+        flex-direction: column;
+      }
     }
 
     &-dots {
@@ -249,6 +275,7 @@ export default {
       border-bottom: 1px dotted $main-black;
       height: 1em;
       margin: 0 0.4em 2px 0.4em;
+      min-width: 15px;
     }
   }
 
