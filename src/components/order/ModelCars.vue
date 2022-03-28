@@ -1,39 +1,45 @@
 <template>
   <div class="model__cars">
     <div
-      v-for="car in cars"
+      v-for="car in filteredCars"
       :key="car.id"
       class="model__car"
       :class="[{ 'model__car--selected': selectedCar && car.id === selectedCar.id }]"
       @click="selectCar(car)"
     >
       <h2 class="model__name">
-        {{ car.model }}
+        {{ car.name }}
       </h2>
       <span class="model__price">{{ car.priceMin }} - {{ car.priceMax }} ₽</span>
-      <img
-        :src="car.img"
-        :alt="car.img"
-        class="model__img"
-      >
+      <picture class="model__img">
+        <img
+          :src="car.thumbnail.path"
+          :alt="car.name"
+        >
+      </picture>
     </div>
   </div>
 </template>
 
 <script>
+import { mapActions, mapGetters } from 'vuex';
+
 export default {
   name: 'ModelCars',
   props: {
-    cars: {
-      type: Array,
-      required: true,
-    },
     selectedCar: {
-      type: Object,
+      type: null,
       required: true,
     },
   },
+  computed: {
+    ...mapGetters(['filteredCars']),
+  },
+  created() {
+    this.getAllCars();
+  },
   methods: {
+    ...mapActions(['getAllCars']),
     selectCar(car) {
       this.$emit('select-car', car);
     },
@@ -105,6 +111,10 @@ export default {
     @include mobile {
       width: 256px;
       height: 116px;
+    }
+
+    img {
+      object-fit: contain;
     }
   }
 }

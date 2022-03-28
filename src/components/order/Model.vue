@@ -4,48 +4,42 @@
       <div class="model__radio">
         <input
           id="radio-1"
+          v-model="selectedCategory"
+          :value="null"
           type="radio"
           name="radio"
-          value="1"
           checked
         >
-        <label for="radio-1"><img
+        <label
+
+          for="radio-1"
+        ><img
           class="model__radio-check"
           src="@/assets/image/radio.png"
           alt="Все модели"
         >Все модели</label>
       </div>
 
-      <div class="model__radio">
+      <div
+        v-for="category in categories"
+        :key="category.id"
+        class="model__radio"
+      >
         <input
-          id="radio-2"
+          :id="`radio-${category.id}`"
+          v-model="selectedCategory"
           type="radio"
           name="radio"
-          value="2"
+          :value="category.id"
         >
-        <label for="radio-2"><img
+        <label :for="`radio-${category.id}`"><img
           class="model__radio-check"
           src="@/assets/image/radio.png"
-          alt="Эконом"
-        >Эконом</label>
-      </div>
-
-      <div class="model__radio">
-        <input
-          id="radio-3"
-          type="radio"
-          name="radio"
-          value="3"
-        >
-        <label for="radio-3"><img
-          class="model__radio-check"
-          src="@/assets/image/radio.png"
-          alt="Премиум"
-        >Премиум</label>
+          :alt="category.name"
+        >{{ category.name }}</label>
       </div>
     </div>
     <model-cars
-      :cars="cars"
       :selected-car="selectedCar"
       @select-car="selectedCar = $event"
     />
@@ -54,17 +48,13 @@
 
 <script>
 import ModelCars from '@/components/order/ModelCars.vue';
-import cars from '@/constants/cars';
+import { mapActions, mapState } from 'vuex';
 
 export default {
   name: 'Model',
   components: { ModelCars },
-  data() {
-    return {
-      cars,
-    };
-  },
   computed: {
+    ...mapState(['categories']),
     selectedCar: {
       get() {
         return this.$store.state.order.car;
@@ -73,6 +63,15 @@ export default {
         this.$store.dispatch('setOrder', { key: 'car', value });
       },
     },
+    selectedCategory: {
+      get() {
+        return this.$store.state.order.category;
+      },
+      set(value) {
+        this.$store.dispatch('setSelectedCategory', value);
+      },
+    },
+
     isStepFilled() {
       return !!this.selectedCar;
     },
@@ -82,6 +81,13 @@ export default {
       this.$store.dispatch('setStepFilledStatus', { stepName: 'model', value });
     },
   },
+  created() {
+    this.getCategories();
+  },
+  methods: {
+    ...mapActions(['getCategories']),
+  },
+
 };
 </script>
 

@@ -1,6 +1,13 @@
 const path = require('path');
 
 module.exports = {
+  devServer: {
+    proxy: {
+      '/api': {
+        target: 'http://api-factory.simbirsoft1.com',
+      },
+    },
+  },
   publicPath: process.env.NODE_ENV === 'production'
     ? '/simbirsoft-practice/'
     : '/',
