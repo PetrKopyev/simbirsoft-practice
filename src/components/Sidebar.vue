@@ -251,7 +251,6 @@ export default {
   display: block;
   padding-bottom: 12px;
   color: $white;
-  font-family: 'Roboto', sans-serif;
   font-weight: 500;
   font-size: 32px;
   line-height: 37px;

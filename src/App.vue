@@ -18,7 +18,7 @@ export default {
 </script>
 
 <style lang="scss">
-#app {
+body {
   font-family: 'Roboto', sans-serif;
   height: 100%;
 }
