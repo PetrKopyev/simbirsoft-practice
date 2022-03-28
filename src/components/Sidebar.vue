@@ -31,22 +31,6 @@
                 <icon-telegram />
               </app-svg>
             </a>
-            <a
-              href="#"
-              class="menu__links-icon"
-            >
-              <app-svg icon-name="write">
-                <icon-facebook />
-              </app-svg>
-            </a>
-            <a
-              href="#"
-              class="menu__links-icon"
-            >
-              <app-svg icon-name="write">
-                <icon-instagram />
-              </app-svg>
-            </a>
           </div>
         </ul>
         <div class="menu__right" />
@@ -64,8 +48,6 @@
 <script>
 import AppSvg from '@/components/AppSvg.vue';
 import IconTelegram from '@/components/icons/IconTelegram.vue';
-import IconFacebook from '@/components/icons/IconFacebook.vue';
-import IconInstagram from '@/components/icons/IconInstagram.vue';
 
 const menuItems = [
   {
@@ -88,8 +70,6 @@ const menuItems = [
 export default {
   name: 'Sidebar',
   components: {
-    IconInstagram,
-    IconFacebook,
     IconTelegram,
     AppSvg,
   },

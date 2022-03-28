@@ -9,7 +9,7 @@
       v-if="step.code === 'info'"
       class="order__name"
     >
-      Заказ номер RU58491823
+      Заказ номер {{ order.id }}
     </h1>
     <stages
       v-else
@@ -40,6 +40,7 @@ import Model from '@/components/order/Model.vue';
 import Options from '@/components/order/Options.vue';
 import Result from '@/components/order/Result.vue';
 import Info from '@/components/order/Info.vue';
+import { mapState } from 'vuex';
 import Location from './Location.vue';
 
 export default {
@@ -60,6 +61,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(['order']),
     steps() {
       return this.$store.state.steps;
     },
@@ -74,7 +76,9 @@ export default {
   },
   methods: {
     getDefaultStep() {
-      const step = this.steps[0];
+      const step = this.$route.params.stepName !== 'info'
+        ? this.steps[0]
+        : Object.values(this.steps).find((item) => item.code === 'info');
       this.step = step;
 
       if (this.$route.params.stepName !== this.step.code) {
