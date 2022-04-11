@@ -23,17 +23,33 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex';
+
 export default {
   name: 'ConfirmResult',
+
   methods: {
-    onConfirm() {
+    ...mapActions(['createOrder']),
+
+    async onConfirm() {
       this.hidePopUp();
-      this.$router.push({
-        name: 'Order',
-        params: {
-          stepName: 'info',
-        },
-      });
+
+      try {
+        const orderId = await this.createOrder();
+        console.log(orderId);
+
+        await this.$router.push({
+          name: 'Order',
+          params: {
+            stepName: 'info',
+          },
+          query: {
+            orderId,
+          },
+        });
+      } catch (e) {
+        console.error(e);
+      }
     },
     hidePopUp() {
       this.$emit('show', false);
