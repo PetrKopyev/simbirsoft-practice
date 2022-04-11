@@ -10,6 +10,7 @@
           v-model="city"
           filterable
           class="search__mb13"
+          clearable
           placeholder="Начните вводить город"
         >
           <el-option
@@ -23,6 +24,7 @@
         <el-select
           v-model="point"
           filterable
+          clearable
           placeholder="Начните вводить пункт"
           :disabled="!city"
         >

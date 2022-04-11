@@ -1,8 +1,26 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import api from '@/api';
+import { uniqWith } from 'lodash';
 
 Vue.use(Vuex);
+
+const isStrSame = (val, oth) => val.trim().toLowerCase() === oth.trim().toLowerCase();
+const clearOrder = {
+  city: null,
+  point: null,
+  car: null,
+  color: '',
+  rentDataStart: null,
+  rentDataEnd: null,
+  isFullTank: false,
+  isNeedChildChair: false,
+  isRightWheel: false,
+  rateType: null,
+  rate: null,
+  price: null,
+  status: null,
+};
 
 export default new Vuex.Store({
   state: {
@@ -31,23 +49,14 @@ export default new Vuex.Store({
         code: 'info',
       },
     },
-    order: {
-      city: null,
-      point: null,
-      car: null,
-      category: null,
-      color: '1',
-      rentDataStart: null,
-      rentDataEnd: null,
-      tariff: null,
-      additionalServices: [],
-    },
+    order: clearOrder,
 
     cities: [],
     points: [],
     cars: [],
     categories: [],
     selectedCategory: null,
+    rates: [],
   },
   mutations: {
     SET_ORDER(state, payload) {
@@ -70,6 +79,15 @@ export default new Vuex.Store({
     },
     SET_SELECTED_CATEGORY(state, payload) {
       this.state.selectedCategory = payload;
+    },
+    SET_RATE_TYPE(state, payload) {
+      this.state.rateType = payload;
+    },
+    SET_RATE(state, payload) {
+      this.state.rates = payload;
+    },
+    SET_STATUS(state, payload) {
+      this.state.order.status = payload;
     },
   },
   actions: {
@@ -123,12 +141,54 @@ export default new Vuex.Store({
       commit('SET_SELECTED_CATEGORY', id);
     },
 
+    async getRateType({ commit }) {
+      const { data: rateType } = await api.rateType.getRateType();
+      commit('SET_RATE_TYPE', rateType.data);
+    },
+
+    async getOrderStatus({ commit }) {
+      const status = await api.orderStatus.getOrderStatus();
+      const allStatuses = status.data.data;
+      commit('SET_STATUS', allStatuses);
+    },
+
+    async getRate({ commit }) {
+      const { data: rates } = await api.rate.getRate();
+      const rateList = rates.data;
+      commit('SET_RATE', rateList);
+    },
+
     setOrder({ commit, state }, { key, value }) {
       const { order } = state;
 
       order[key] = value;
 
       commit('SET_ORDER', order);
+    },
+
+    setOrderFromApi({ commit }, orderDataFromApi) {
+      console.log(orderDataFromApi);
+      const orderData = {
+        car: orderDataFromApi.carId,
+        city: orderDataFromApi.cityId.name,
+        color: orderDataFromApi.color,
+        isFullTank: orderDataFromApi.isFullTank,
+        isNeedChildChair: orderDataFromApi.isNeedChildChair,
+        isRightWheel: orderDataFromApi.isNeedChildChair,
+        point: orderDataFromApi.pointId.name,
+        price: orderDataFromApi.price,
+        rate: orderDataFromApi.rateId,
+        rateType: null,
+        rentDataEnd: orderDataFromApi.dateTo,
+        rentDataStart: orderDataFromApi.dateFrom,
+        status: orderDataFromApi.status,
+        id: orderDataFromApi.id,
+      };
+      commit('SET_ORDER', orderData);
+    },
+
+    clearOrder({ commit }) {
+      commit('SET_ORDER', clearOrder);
     },
 
     setStepFilledStatus({ commit, state }, { stepName, value }) {
@@ -139,9 +199,47 @@ export default new Vuex.Store({
 
       commit('SET_STEP_FILLED_STATUS', steps);
     },
+
+    async createOrder({ state, getters }) {
+      const orderData = {
+        orderStatusId: {
+          name: 'Новые',
+          id: '5e26a191099b810b946c5d89',
+        },
+        cityId: {
+          name: getters.selectedCityObject.name,
+          id: getters.selectedCityObject.id,
+        },
+        pointId: {
+          address: getters.selectPoint.address,
+          id: getters.selectPoint.id,
+          name: state.order.point,
+        },
+        carId: state.order.car,
+        color: state.order.color,
+        dateFrom: state.order.rentDataStart,
+        dateTo: state.order.rentDataEnd,
+        rateId: state.order.rate,
+        price: state.order.price,
+        isFullTank: state.order.isFullTank,
+        isNeedChildChair: state.order.isNeedChildChair,
+        isRightWheel: state.order.isRightWheel,
+      };
+
+      try {
+        const { data } = await api.order.setOrder(orderData);
+
+        const orderId = data.data.id;
+
+        return Promise.resolve(orderId);
+      } catch (e) {
+        console.error(e);
+        return Promise.reject();
+      }
+    },
   },
   getters: {
-    selectedCarObject: (state) => state.cars.find((item) => item === state.order.car),
+    selectedCarObject: (state) => state.order.car,
     selectedCityObject: (state) => state.cities.find((item) => item.name === state.order.city),
     selectedCityPoints: (state, getters) => state.points
       .filter((item) => item.cityId.id === getters.selectedCityObject?.id),
@@ -150,5 +248,41 @@ export default new Vuex.Store({
     filteredCars: (state) => (state.selectedCategory
       ? state.cars.filter((item) => item.categoryId.id === state.selectedCategory)
       : state.cars),
+    uniqRateTypes: (state) => uniqWith(
+      state.rateType,
+      (val, oth) => (isStrSame(val.name, oth.name)),
+    ).map((item) => {
+      let unit = '';
+      switch (item.name) {
+      case 'Годовой':
+      case 'Годоовой':
+        unit = 365 * 7 * 24 * 60;
+        break;
+      case '3 Месяца':
+        unit = 3 * 30 * 7 * 24 * 60;
+        break;
+      case 'Месячный':
+        unit = 30 * 24 * 60;
+        break;
+      case 'Недельный':
+      case 'Недельный (Акция!)':
+        unit = 7 * 24 * 60;
+        break;
+      case 'сутки':
+        unit = 24 * 60;
+        break;
+      case 'Поминутно':
+        unit = 1;
+        break;
+      default:
+        unit = 24 * 60;
+        break;
+      }
+
+      return {
+        name: item.name,
+        unit,
+      };
+    }),
   },
 });

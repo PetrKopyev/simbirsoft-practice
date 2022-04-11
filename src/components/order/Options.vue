@@ -9,7 +9,7 @@
             v-model="selectedColor"
             type="radio"
             name="radio"
-            value="1"
+            value="Любой"
           >
           <label for="radio-1">
             <img
@@ -20,39 +20,29 @@
           </label>
         </div>
 
-        <div class="model__radio">
-          <input
-            id="radio-2"
-            v-model="selectedColor"
-            type="radio"
-            name="radio"
-            value="2"
+        <template v-if="selectedCarObject">
+          <div
+            v-for="(color, index) in selectedCarObject.colors"
+            :key="index"
+            class="model__radio"
           >
-          <label for="radio-2">
-            <img
-              class="model__radio-check"
-              src="@/assets/image/radio.png"
+            <input
+              :id="index"
+              v-model="selectedColor"
+              type="radio"
+              name="radio"
+              :value="color"
             >
-            Красный
-          </label>
-        </div>
+            <label :for="index">
 
-        <div class="model__radio">
-          <input
-            id="radio-3"
-            v-model="selectedColor"
-            type="radio"
-            name="radio"
-            value="3"
-          >
-          <label for="radio-3">
-            <img
-              class="model__radio-check"
-              src="@/assets/image/radio.png"
-            >
-            Голубой
-          </label>
-        </div>
+              <img
+                class="model__radio-check"
+                src="@/assets/image/radio.png"
+              >
+              {{ color }}
+            </label>
+          </div>
+        </template>
       </div>
     </div>
     <div class="options__rent">
@@ -62,55 +52,55 @@
           <span class="search__mb13">С</span>
           <span>По</span>
         </div>
-        <div class="options__rent-input">
+
+        <div class="options__rent-input options__datepicker">
           <input
-            v-model="selectedRentDataStart"
+            v-model="rentDataStart"
             type="text"
             class="search__mb13"
             placeholder="Введите дату и время"
+            @focus="focusDatepicker"
           >
+
           <input
-            v-model="selectedRentDataEnd"
+            v-model="rentDataEnd"
             type="text"
             placeholder="Введите дату и время"
+            @focus="focusDatepicker"
           >
+
+          <el-date-picker
+            ref="datepicker"
+            v-model="selectedRange"
+            type="datetimerange"
+            class="search__mb13"
+            value-format="timestamp"
+            :picker-options="pickerOptions"
+          />
         </div>
       </div>
     </div>
     <div class="options__rate">
       <span class="options-item">Тариф</span>
       <div class="options__rate-checkbox">
-        <div class="model__radio  mb-8">
+        <div
+          v-for="rate in rates"
+          :key="rate.id"
+          class="model__radio  mb-8"
+        >
           <input
-            id="rate-radio-1"
-            v-model="selectedTariff"
+            :id="rate.id"
+            v-model="selectedRate"
             type="radio"
             name="rate"
-            value="1"
+            :value="rate"
           >
-          <label for="rate-radio-1">
+          <label :for="rate.id">
             <img
               class="model__radio-check"
               src="@/assets/image/radio.png"
             >
-            Поминутно, 7₽/мин
-          </label>
-        </div>
-
-        <div class="model__radio">
-          <input
-            id="rate-radio-2"
-            v-model="selectedTariff"
-            type="radio"
-            name="rate"
-            value="2"
-          >
-          <label for="rate-radio-2">
-            <img
-              class="model__radio-check"
-              src="@/assets/image/radio.png"
-            >
-            На сутки, 1999 ₽/сутки
+            {{ rate.rateTypeId.name }}, {{ rate.price }}₽/{{ rate.rateTypeId.unit }}
           </label>
         </div>
       </div>
@@ -118,10 +108,12 @@
     <div class="options__services">
       <span class="options-item">Доп услуги</span>
       <div class="options__services-items">
-        <div class="options__services-item">
+        <div
+          class="options__services-item"
+        >
           <input
             id="c1"
-            v-model="selectedAdditionalServices"
+            v-model="selectedFullTank"
             type="checkbox"
             value="fullTank"
             name="cc"
@@ -138,7 +130,7 @@
         <div class="options__services-item">
           <input
             id="c2"
-            v-model="selectedAdditionalServices"
+            v-model="selectedNeedChildChair"
             type="checkbox"
             value="child"
             name="cc"
@@ -155,7 +147,7 @@
         <div class="options__services-item">
           <input
             id="c3"
-            v-model="selectedAdditionalServices"
+            v-model="selectedRightWheel"
             type="checkbox"
             value="right"
             name="cc"
@@ -175,9 +167,24 @@
 </template>
 
 <script>
+import { mapActions, mapGetters, mapState } from 'vuex';
+import dayjs from 'dayjs';
+
 export default {
   name: 'Options',
+
+  data() {
+    return {
+      selectedRange: [],
+      pickerOptions: {
+        firstDayOfWeek: 1,
+      },
+    };
+  },
+
   computed: {
+    ...mapState(['rates']),
+    ...mapGetters(['selectedCarObject']),
     selectedColor: {
       get() {
         return this.$store.state.order.color;
@@ -186,46 +193,85 @@ export default {
         this.$store.dispatch('setOrder', { key: 'color', value });
       },
     },
-    selectedTariff: {
+    rentDataStart: {
       get() {
-        return this.$store.state.order.tariff;
-      },
-      set(value) {
-        this.$store.dispatch('setOrder', { key: 'tariff', value });
-      },
-    },
-    selectedAdditionalServices: {
-      get() {
-        return this.$store.state.order.additionalServices;
-      },
-      set(value) {
-        this.$store.dispatch('setOrder', { key: 'additionalServices', value });
-      },
-    },
-    selectedRentDataStart: {
-      get() {
-        return this.$store.state.order.rentDataStart;
+        return this.$store.state.order.rentDataStart
+          ? dayjs(this.$store.state.order.rentDataStart).format('DD.MM.YYYY HH:mm')
+          : '';
       },
       set(value) {
         this.$store.dispatch('setOrder', { key: 'rentDataStart', value });
       },
     },
-    selectedRentDataEnd: {
+    rentDataEnd: {
       get() {
-        return this.$store.state.order.rentDataEnd;
+        return this.$store.state.order.rentDataEnd
+          ? dayjs(this.$store.state.order.rentDataEnd).format('DD.MM.YYYY HH:mm')
+          : '';
       },
       set(value) {
         this.$store.dispatch('setOrder', { key: 'rentDataEnd', value });
       },
     },
+    selectedRate: {
+      get() {
+        return this.$store.state.order.rate;
+      },
+      set(value) {
+        this.$store.dispatch('setOrder', { key: 'rate', value });
+      },
+    },
+    selectedFullTank: {
+      get() {
+        return this.$store.state.order.isFullTank;
+      },
+      set(value) {
+        this.$store.dispatch('setOrder', { key: 'isFullTank', value });
+      },
+    },
+    selectedNeedChildChair: {
+      get() {
+        return this.$store.state.order.isNeedChildChair;
+      },
+      set(value) {
+        this.$store.dispatch('setOrder', { key: 'isNeedChildChair', value });
+      },
+    },
+    selectedRightWheel: {
+      get() {
+        return this.$store.state.order.isRightWheel;
+      },
+      set(value) {
+        this.$store.dispatch('setOrder', { key: 'isRightWheel', value });
+      },
+    },
     isStepFilled() {
-      return !!this.selectedColor && !!this.selectedTariff
-        && !!this.selectedRentDataStart && !!this.selectedRentDataEnd;
+      return !!this.selectedColor && !!this.$store.state.order.rate;
     },
   },
   watch: {
     isStepFilled(value) {
       this.$store.dispatch('setStepFilledStatus', { stepName: 'options', value });
+    },
+
+    selectedRange(value) {
+      const [startDate, endDate] = value;
+
+      this.rentDataStart = startDate;
+      this.rentDataEnd = endDate;
+    },
+  },
+  created() {
+    this.getAllCars();
+    this.getRate();
+  },
+  methods: {
+    ...mapActions(['getAllCars', 'getRate']),
+
+    focusDatepicker() {
+      setTimeout(() => {
+        this.$refs.datepicker.focus();
+      }, 100);
     },
   },
 };
@@ -253,6 +299,16 @@ export default {
     line-height: 16px;
     color: $main-black;
     margin-bottom: 15px;
+  }
+
+  &__datepicker {
+    .el-date-editor {
+      height: 0;
+      overflow: hidden;
+      padding: 0;
+      margin: 0;
+      border: none;
+    }
   }
 
   &__colors {
@@ -406,6 +462,21 @@ export default {
       }
     }
   }
+}
+
+.el-input--prefix .el-input__inner {
+  height: auto;
+  line-height: inherit;
+  padding-left: 0;
+}
+
+.el-input--suffix .el-input__inner {
+  //border: 0;
+  border-radius: 0;
+  background-color: rgba(0,0,0,0);
+  outline: 0;
+  width: 224px;
+  padding: 3px 8px;
 }
 
 .mb-8 {
